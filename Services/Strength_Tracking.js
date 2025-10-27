@@ -65,6 +65,33 @@ class Strength_Tracking {
             throw new Error(error.message || "Error while creating/updating strength tracking");
         }
     }
+
+    async getStrengthDataByProfileId(Trainee_Profile) {
+        try {
+            const weight = await WeightTracker.findOne({ Trainee_Profile }).select(
+                "current_weight target_weight weight_progress weight_difference"
+            );
+            const height = await HeightTracker.findOne({ Trainee_Profile }).select("height_cm");
+            const bmi = await BMITracker.findOne({ Trainee_Profile }).select("bmi_value bmi_status");
+
+            if (!weight && !height && !bmi) {
+                throw new Error("No strength tracking data found for this profile");
+            }
+
+            // ✅ Flatten and return only required fields
+            return {
+                bmi_status: bmi?.bmi_status || null,
+                bmi_value: bmi?.bmi_value || null,
+                height_cm: height?.height_cm || null,
+                current_weight: weight?.current_weight || null,
+                target_weight: weight?.target_weight || null,
+                weight_progress: weight?.weight_progress || null,
+                weight_difference: weight?.weight_difference || null,
+            };
+        } catch (error) {
+            throw new Error(error.message || "Error fetching strength tracking data");
+        }
+    }
 }
 
 module.exports = new Strength_Tracking();

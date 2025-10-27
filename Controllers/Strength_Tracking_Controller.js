@@ -28,6 +28,21 @@ class Strength_Tracking_Controller {
             });
         }
     }
+
+    async getStrengthData(req, res) {
+        try {
+            const { Trainee_Profile } = req.params;
+            const result = await Strength_Tracking.getStrengthDataByProfileId(Trainee_Profile);
+
+            res.status(200).json({
+                status: "success",
+                message: "Strength tracking data fetched successfully",
+                data: result,
+            });
+        } catch (error) {
+            res.status(500).json({ status: "error", message: error.message });
+        }
+    }
 }
 
 module.exports = new Strength_Tracking_Controller();
